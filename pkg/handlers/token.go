@@ -17,13 +17,8 @@ import (
 	"github.com/twocanoes/psso-server/pkg/file"
 )
 
-func jwksPrivateKey() (*ecdsa.PrivateKey, error) {
+func jwksPrivateKey(jwks *psso.JWKS) (*ecdsa.PrivateKey, error) {
 
-	jwks, err := file.GetJWKS()
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
 	jwkPrivKey, err := jwks.PrivateKey()
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -43,11 +38,13 @@ func Token() http.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		print("Got jwks first time")
 
 		//get the service private key for signing response.
-		servicePrivateKey, err := jwksPrivateKey()
+		servicePrivateKey, err := jwksPrivateKey(jwks)
 		if err != nil {
 			fmt.Println(err)
+			print("Error fetching jwks second time")
 			return
 		}
 
@@ -88,7 +85,10 @@ func Token() http.HandlerFunc {
 		if kid == "" {
 			return
 		}
+		fmt.Printf("KID: %s\n", kid)
 		var keyID file.KeyID
+
+		kid = "c2lnbmluZ0tleUlE" // temp hack to use a hardcoded KID
 
 		filePath, err := base64.StdEncoding.DecodeString(kid)
 
@@ -161,6 +161,8 @@ func Token() http.HandlerFunc {
 		// The version of PSSO is required to be known since the format of the claims is different depending on the version
 		// of PSSO.
 		if pssoVersion == "1.0" {
+
+			fmt.Println("Message is v1")
 
 			//verify the signature and get the claims for the user authentication.
 			userClaims, _, err := psso.VerifyJWTAndReturnUserClaims(requestJWTString, deviceSigningPublicKey)

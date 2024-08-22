@@ -185,5 +185,9 @@ func Register() http.HandlerFunc {
 			fmt.Println(err.Error())
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintf(w, "Device registration successful!!")
 	}
 }

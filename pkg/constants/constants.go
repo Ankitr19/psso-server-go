@@ -6,15 +6,14 @@ import (
 )
 
 var AASAApps = [...]string{
-	"UXP6YEHSPW.com.twocanoes.ssoeexample",
-	"UXP6YEHSPW.com.twocanoes.sciSSOrs",
-	"UXP6YEHSPW.com.twocanoes.Scissors",
+	"Y5AGN86Z26.com.rippling.Rippling-MDM-Sync",
+	"Y5AGN86Z26.com.rippling.Rippling-MDM-Sync.SSO-extension",
 }
 
 var (
-	Issuer                  = getEnv("PSSO_ISSUER", "")
+	Issuer                  = getEnv("PSSO_ISSUER", "https://devicepssoidpserver.ripplingdev.net")
 	Audience                = getEnv("PSSO_AUDIENCE", "psso")
-	Address                 = getEnv("PSSO_ADDRESS", ":443")
+	Address                 = getEnv("PSSO_ADDRESS", ":5000")
 	TLSPrivateKeyPath       = getEnv("PSSO_TLSPRIVATEKEYPATH", filepath.FromSlash("/etc/psso/privkey.pem"))
 	TLSCertificateChainPath = getEnv("PSSO_TLSCERTIFICATECHAINPATH", filepath.FromSlash("/etc/psso/fullchain.pem"))
 	JWKSFilepath            = getEnv("PSSO_JWKSFILEPATH", filepath.FromSlash("/var/psso/jwks.json"))
@@ -27,6 +26,8 @@ var (
 	EndpointNonce          = getEnv("PSSO_ENDPOINTNONCE", "/nonce")
 	EndpointRegister       = getEnv("PSSO_ENDPOINTREGISTER", "/register")
 	EndpointToken          = getEnv("PSSO_ENDPOINTTOKEN", "/token")
+
+	HealthCheck = getEnv("PSSO_HEALTH", "/health")
 )
 
 func getEnv(key, fallback string) string {

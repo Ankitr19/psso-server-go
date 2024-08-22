@@ -38,7 +38,15 @@ func Save(object interface{}, path string) error {
 
 	if _, err := os.Stat(parentFolder); errors.Is(err, os.ErrNotExist) {
 		os.Mkdir(parentFolder, 0750)
+		fmt.Println(("Created parent dir"))
 	}
+
+	err := os.MkdirAll(parentFolder, os.ModePerm)
+	if err != nil {
+		fmt.Println("Error creating directories:", err)
+		return err
+	}
+
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) == false {
 		fmt.Println("Removing file")
 		err = os.Remove(path)
@@ -77,6 +85,7 @@ func ReadFile(path string) ([]byte, error) {
 
 	fi, err := os.Open(path)
 	if err != nil {
+		print(err)
 		return nil, fmt.Errorf("error opening file in ReadFile")
 	}
 	// close fi on exit and check for its returned error

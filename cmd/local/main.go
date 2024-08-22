@@ -17,6 +17,9 @@ func NewRouter() *http.ServeMux {
 	// Create router and define routes and return that router
 	router := http.NewServeMux()
 
+	// health endpoint
+	router.HandleFunc(constants.HealthCheck, handlers.HandleHealthCheck())
+
 	// well-knowns
 	router.HandleFunc(constants.EndpointJWKS, handlers.WellKnownJWKS())
 	router.HandleFunc(constants.EndpointAppleSiteAssoc, handlers.WellKnownAASA())
@@ -31,10 +34,6 @@ func NewRouter() *http.ServeMux {
 
 func run() {
 
-	if constants.Issuer == "" {
-		log.Printf("Issuer is not defined! Set environment variable PSSO_ISSUER that matches your issuer in the PSSO extension")
-		os.Exit(-1)
-	}
 	// Set up a channel to listen to for interrupt signals
 	var runChan = make(chan os.Signal, 1)
 
@@ -69,7 +68,7 @@ func run() {
 
 	// Run the server on a new goroutine
 	go func() {
-		if err := server.ListenAndServeTLS(constants.TLSCertificateChainPath, constants.TLSPrivateKeyPath); err != nil {
+		if err := server.ListenAndServe(); err != nil {
 
 			if err == http.ErrServerClosed {
 				// Normal interrupt operation, ignore
